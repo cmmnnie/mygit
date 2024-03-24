@@ -1,12 +1,106 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>검색api 캠핑성지 검색결과</title>
+    <title>무료캠핑장</title>
 </head>
 <body>
-    <h1>검색api 캠핑성지 검색결과</h1>
-    <p>검색결과</p>
+    <h1>무료캠핑장</h1>
+    <div id="results"></div>
+
+    <script>
+        // 블로그 검색 API를 호출하는 함수
+        function searchBlogs(query) {
+            const REST_API_KEY = '2caee7ec8dc4723c7ac24dee3a5e6067'; // 여기에 카카오 REST API 키를 입력하세요.
+            const apiUrl = `https://dapi.kakao.com/v2/search/blog?query=${encodeURIComponent(query)}`;
+            fetch(apiUrl, {
+                headers: {
+                    'Authorization': `KakaoAK ${REST_API_KEY}`
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayResults(data.documents);
+            })
+            .catch(error => console.error('Error fetching data:', error));
+        }
+
+        // 결과를 표시하는 함수
+        function displayResults(documents) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+            documents.forEach(item => {
+                const title = item.title;
+                const url = item.url;
+                const thumbnail = item.thumbnail;
+                const blogname = item.blogname;
+                const datetime = new Date(item.datetime).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+                
+                // 결과를 생성하고 결과를 HTML에 추가합니다.
+                const resultContainer = document.createElement('div');
+                resultContainer.classList.add('result-container');
+
+                const thumbnailElement = document.createElement('img');
+                thumbnailElement.src = thumbnail;
+                thumbnailElement.alt = title;
+                thumbnailElement.classList.add('thumbnail');
+                resultContainer.appendChild(thumbnailElement);
+
+                const titleElement = document.createElement('a');
+                titleElement.textContent = title;
+                titleElement.href = url;
+                titleElement.classList.add('title');
+                resultContainer.appendChild(titleElement);
+
+                const blognameElement = document.createElement('p');
+                blognameElement.textContent = `블로그: ${blogname}`;
+                resultContainer.appendChild(blognameElement);
+
+                const datetimeElement = document.createElement('p');
+                datetimeElement.textContent = `게시일: ${datetime}`;
+                resultContainer.appendChild(datetimeElement);
+
+                resultsDiv.appendChild(resultContainer);
+            });
+        }
+
+        // 페이지가 로드될 때 실행되는 함수
+        window.onload = function() {
+            // 페이지가 로드되면 검색 실행
+            const query = "캠핑성지"; // 검색할 쿼리 설정
+            searchBlogs(query);
+        };
+    </script>
+    
+    <style>
+        .result-container {
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .thumbnail {
+            width: 100px;
+            height: 100px;
+            float: left;
+            margin-right: 10px;
+        }
+
+        .title {
+            font-weight: bold;
+            font-size: 18px;
+            color: #333;
+            text-decoration: none;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        p {
+            margin: 0;
+        }
+    </style>
 </body>
 </html>
