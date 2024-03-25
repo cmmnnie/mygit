@@ -8,12 +8,15 @@
 <body>
     <h1>무료캠핑장</h1>
     <div id="results"></div>
+    <button id="loadMoreButton">더 보기</button>
 
     <script>
+        let nextPage = 1; // 다음 페이지를 추적하기 위한 변수
+
         // 블로그 검색 API를 호출하는 함수
-        function searchBlogs(query) {
+        function searchBlogs(query, page) {
             const REST_API_KEY = '2caee7ec8dc4723c7ac24dee3a5e6067'; // 여기에 카카오 REST API 키를 입력하세요.
-            const apiUrl = `https://dapi.kakao.com/v2/search/blog?query=${encodeURIComponent(query)}`;
+            const apiUrl = `https://dapi.kakao.com/v2/search/blog?query=${encodeURIComponent(query)}&page=${page}`;
             fetch(apiUrl, {
                 headers: {
                     'Authorization': `KakaoAK ${REST_API_KEY}`
@@ -29,7 +32,6 @@
         // 결과를 표시하는 함수
         function displayResults(documents) {
             const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = '';
             documents.forEach(item => {
                 const title = item.title;
                 const url = item.url;
@@ -65,11 +67,19 @@
             });
         }
 
+        // "더 보기" 버튼에 대한 클릭 이벤트 핸들러
+        document.getElementById('loadMoreButton').addEventListener('click', function() {
+            const query = "캠핑성지"; // 검색할 쿼리 설정
+            searchBlogs(query, nextPage);
+            nextPage++; // 페이지 증가
+        });
+
         // 페이지가 로드될 때 실행되는 함수
         window.onload = function() {
             // 페이지가 로드되면 검색 실행
             const query = "캠핑성지"; // 검색할 쿼리 설정
-            searchBlogs(query);
+            searchBlogs(query, nextPage);
+            nextPage++; // 페이지 증가
         };
     </script>
     
@@ -100,6 +110,14 @@
 
         p {
             margin: 0;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .thumbnail {
+                float: none;
+                margin: 0 auto 10px auto;
+                display: block;
+            }
         }
     </style>
 </body>
