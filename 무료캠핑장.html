@@ -33,7 +33,7 @@
         function displayResults(documents) {
             const resultsDiv = document.getElementById('results');
             documents.forEach(item => {
-                const title = item.title;
+                const title = item.title.replace(/<\/?b>/g, ''); // <b></b> 태그 제거
                 const url = item.url;
                 const thumbnail = item.thumbnail;
                 const blogname = item.blogname;
