@@ -1,3 +1,4 @@
+@ -0,0 +1,186 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -16,7 +17,6 @@
             padding: 0;
             background-attachment: fixed;
         }
-
         h1 {
             font-family: 'Merriweather', serif;
             color: #9a81d3;
@@ -25,12 +25,10 @@
             padding: 20px;
             margin: 20px auto;
             border-radius: 10px;
-            background-color: rgba(0, 0, 0, 0.6); /* 배경 이미지와 조화를 이루도록 반투명 검정색 사용 */
-            background-size: cover;
+            background-color: rgba(0, 0, 0, 0.6);
             width: fit-content;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-
         .result-container, #controls {
             background-color: rgba(255, 255, 255, 0.9);
             border-radius: 5px;
@@ -39,7 +37,6 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             max-width: 600px;
         }
-
         .button, #region {
             background-color: #3bcbff;
             border: none;
@@ -49,11 +46,9 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
-
         .button:hover, #region:hover {
             background-color: #07a0ff;
         }
-
         @media (max-width: 768px) {
             h1 {
                 margin: 10px;
@@ -67,93 +62,126 @@
     <div id="controls">
         <label for="region">지역 선택:</label>
         <select id="region" onchange="loadInitialBlogs()">
-            <option value="서울">서울</option>
-            <option value="경기도">경기도</option>
-            <option value="강원도">강원도</option>
-            <option value="충청도">충청도</option>
-            <option value="전라도">전라도</option>
-            <option value="제주도">제주도</option>
+            <optgroup label="서울">
+                <option value="서울">전체</option>
+            </optgroup>
+            <optgroup label="경기도">
+                <option value="수원">수원</option>
+                <option value="성남">성남</option>
+                <option value="고양">고양</option>
+                <option value="용인">용인</option>
+            </optgroup>
+            <optgroup label="강원도">
+                <option value="춘천">춘천</option>
+                <option value="강릉">강릉</option>
+                <option value="원주">원주</option>
+            </optgroup>
+            <optgroup label="충청도">
+                <option value="천안">천안</option>
+                <option value="공주">공주</option>
+            </optgroup>
+            <optgroup label="전라도">
+                <option value="전주">전주</option>
+                <option value="군산">군산</option>
+            </optgroup>
+            <optgroup label="제주도">
+                <option value="제주시">제주시</option>
+                <option value="서귀포">서귀포</option>
+            </optgroup>
         </select>
-        <button id="loadMoreButton" class="button">더 보기</button>
+        <button id="prevButton" class="button" onclick="loadPreviousPage()">이전</button>
+        <span id="pageInfo"> 페이지 1 </span>
+        <button id="nextButton" class="button" onclick="loadNextPage()">다음</button>
     </div>
     <div id="results"></div>
+    <script>
+        let currentPage = 1;
+        const REST_API_KEY = '2caee7ec8dc4723c7ac24dee3a5e6067';
 
-  <script>
-      let nextPage = 1;
+        function updatePageInfo() {
+            document.getElementById('pageInfo').textContent = '페이지 ' + currentPage;
+        }
 
-      function searchBlogs(query, page) {
-          const REST_API_KEY = '2caee7ec8dc4723c7ac24dee3a5e6067';
-          const apiUrl = `https://dapi.kakao.com/v2/search/blog?query=${encodeURIComponent(query)}&page=${page}`;
-          fetch(apiUrl, {
-              headers: {
-                  'Authorization': `KakaoAK ${REST_API_KEY}`
-              }
-          })
-          .then(response => response.json())
-          .then(data => {
-              displayResults(data.documents);
-          })
-          .catch(error => console.error('Error fetching data:', error));
-      }
+        function searchBlogs(query, page) {
+            const apiUrl = `https://dapi.kakao.com/v2/search/blog?query=${encodeURIComponent(query)}&page=${page}`;
+            fetch(apiUrl, {
+                headers: { 'Authorization': `KakaoAK ${REST_API_KEY}` }
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayResults(data.documents);
+                updatePageInfo();
+            })
+            .catch(error => console.error('Error fetching data:', error));
+        }
 
-      function displayResults(documents) {
-          const resultsDiv = document.getElementById('results');
-          resultsDiv.innerHTML = '';
-          documents.forEach(item => {
-              const title = item.title.replace(/<\/?b>/g, '');
-              const url = item.url;
-              const thumbnail = item.thumbnail;
-              const blogname = item.blogname;
-              const datetime = new Date(item.datetime).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+        function displayResults(documents) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+            documents.forEach(item => {
+                const title = item.title.replace(/<\/?b>/g, '');
+                const url = item.url;
+                const thumbnail = item.thumbnail;
+                const blogname = item.blogname;
+                const datetime = new Date(item.datetime).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
 
-              const resultContainer = document.createElement('div');
-              resultContainer.classList.add('result-container');
+                const resultContainer = document.createElement('div');
+                resultContainer.classList.add('result-container');
 
-              const thumbnailElement = document.createElement('img');
-              thumbnailElement.src = thumbnail;
-              thumbnailElement.alt = title;
-              thumbnailElement.classList.add('thumbnail');
-              resultContainer.appendChild(thumbnailElement);
+                const thumbnailElement = document.createElement('img');
+                thumbnailElement.src = thumbnail;
+                thumbnailElement.alt = title;
+                thumbnailElement.classList.add('thumbnail');
+                resultContainer.appendChild(thumbnailElement);
 
-              const contentDiv = document.createElement('div');
-              contentDiv.classList.add('content');
+                const contentDiv = document.createElement('div');
+                contentDiv.classList.add('content');
 
-              const titleElement = document.createElement('a');
-              titleElement.textContent = title;
-              titleElement.href = url;
-              titleElement.classList.add('title');
-              contentDiv.appendChild(titleElement);
+                const titleElement = document.createElement('a');
+                titleElement.textContent = title;
+                titleElement.href = url;
+                titleElement.classList.add('title');
+                contentDiv.appendChild(titleElement);
 
-              const blognameElement = document.createElement('p');
-              blognameElement.textContent = `블로그: ${blogname}`;
-              contentDiv.appendChild(blognameElement);
+                const blognameElement = document.createElement('p');
+                blognameElement.textContent = `블로그: ${blogname}`;
+                contentDiv.appendChild(blognameElement);
 
-              const datetimeElement = document.createElement('p');
-              datetimeElement.textContent = `게시일: ${datetime}`;
-              contentDiv.appendChild(datetimeElement);
+                const datetimeElement = document.createElement('p');
+                datetimeElement.textContent = `게시일: ${datetime}`;
+                contentDiv.appendChild(datetimeElement);
 
-              resultContainer.appendChild(contentDiv);
+                resultContainer.appendChild(contentDiv);
 
-              resultsDiv.appendChild(resultContainer);
-          });
-      }
+                resultsDiv.appendChild(resultContainer);
+            });
+        }
 
-      document.getElementById('loadMoreButton').addEventListener('click', function() {
-          const region = document.getElementById('region').value;
-          const query = `캠핑성지 ${region}`;
-          searchBlogs(query, nextPage);
-          nextPage++;
-      });
+        function loadNextPage() {
+            currentPage++;
+            const region = document.getElementById('region').value;
+            const query = `캠핑성지 ${region}`;
+            searchBlogs(query, currentPage);
+        }
 
-      function loadInitialBlogs() {
-          nextPage = 1;
-          const region = document.getElementById('region').value;
-          const query = `캠핑성지 ${region}`;
-          searchBlogs(query, nextPage);
-          nextPage++;
-      }
+        function loadPreviousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                const region = document.getElementById('region').value;
+                const query = `캠핑성지 ${region}`;
+                searchBlogs(query, currentPage);
+            }
+        }
 
-      window.onload = loadInitialBlogs;
-  </script>
+        function loadInitialBlogs() {
+            currentPage = 1;
+            const region = document.getElementById('region').value;
+            const query = `캠핑성지 ${region}`;
+            searchBlogs(query, currentPage);
+            updatePageInfo();
+        }
+
+        window.onload = loadInitialBlogs;
+    </script>
 </body>
 </html>
