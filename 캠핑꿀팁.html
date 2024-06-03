@@ -52,6 +52,21 @@
             text-align: center; /* 결과를 가운데 정렬 */
             margin-top: 50px; /* 위쪽 여백 추가 */
         }
+        #mainButton {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #ff6347;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #mainButton:hover {
+            background-color: #ff4500;
+        }
         @media (max-width: 768px) {
             h1 {
                 margin: 10px;
@@ -64,6 +79,7 @@
     <h1>캠핑꿀팁</h1>
     <div id="results"></div>
     <button id="loadMoreButton" class="button" style="display: none;" onclick="loadMoreResults()">더 보기</button>
+    <button id="mainButton" onclick="location.href='index.html'">메인으로</button>
     <script>
         const REST_API_KEY = '2caee7ec8dc4723c7ac24dee3a5e6067';
         let currentPage = 1;

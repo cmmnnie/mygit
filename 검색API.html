@@ -52,6 +52,19 @@
             text-align: center; /* 가운데 정렬 */
             margin-top: 50px; /* 위쪽 여백 추가 */
         }
+        #mainButton {
+            background-color: #9a81d3;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 20px;
+        }
+        #mainButton:hover {
+            background-color: #7d5ea3;
+        }
         @media (max-width: 768px) {
             h1 {
                 margin: 10px;
@@ -62,6 +75,7 @@
 </head>
 <body>
     <h1>검색API</h1>
+    <a id="mainButton" href="index.html">메인으로</a>
     <div id="controls">
         <input type="text" id="searchInput" placeholder="검색어를 입력하세요">
         <button id="searchButton" class="button" onclick="searchWebDocuments()">검색</button>
